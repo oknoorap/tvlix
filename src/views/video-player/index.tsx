@@ -1,5 +1,6 @@
 import { useEffect, useCallback, FC } from "react";
 import useSound from "use-sound";
+import dynamic from "next/dynamic";
 
 import { useChannel } from "hooks/use-channel";
 import { useVideoPlayer } from "hooks/use-video-player";
@@ -7,6 +8,17 @@ import { useVideoPlayer } from "hooks/use-video-player";
 import MediaPlayer from "./media";
 import ShuffleButton from "./shuffle-btn";
 import Spinner from "./spinner";
+
+const Chat = dynamic(() => import("views/chat"), {
+  ssr: false,
+});
+
+const ChatProvider = dynamic(
+  () => import("hooks/use-chat").then((mod) => mod.ChatProvider),
+  {
+    ssr: false,
+  }
+);
 
 const CinemaViewer: FC = ({ children }) => {
   const {
@@ -51,6 +63,10 @@ const CinemaViewer: FC = ({ children }) => {
           <ShuffleButton onClick={shuffleChannel} />
         </div>
       </div>
+
+      <ChatProvider>
+        <Chat />
+      </ChatProvider>
     </div>
   );
 };

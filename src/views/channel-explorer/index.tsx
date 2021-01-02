@@ -1,13 +1,16 @@
 import { FC } from "react";
 
+import { useChannel } from "hooks/use-channel";
+
 import ChannelList from "views/channel-explorer/list";
 
 const ChannelExplorer: FC = ({ children }) => {
+  const { isChannelLoaded } = useChannel();
   return (
-    <div className="group text-white z-50">
+    <div className="text-white z-50">
       {children}
 
-      <ChannelList />
+      {isChannelLoaded && <ChannelList />}
     </div>
   );
 };

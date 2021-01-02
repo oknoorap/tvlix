@@ -1,6 +1,6 @@
 const ChannelSearch = () => {
   return (
-    <div className="relative ml-2 w-1/2">
+    <div className="relative ml-4 w-1/2">
       <input
         type="search"
         placeholder="Search channels"

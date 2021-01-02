@@ -3,6 +3,7 @@ import cx from "classnames";
 
 type ImageProps = {
   src?: string;
+  placeholderSrc?: string;
   srcSet?: string;
   className?: any;
   width?: number;
@@ -17,6 +18,7 @@ type ImageProps = {
 
 const ImageComponent: FC<ImageProps> = ({
   src,
+  placeholderSrc,
   srcSet,
   className,
   alt,
@@ -63,7 +65,17 @@ const ImageComponent: FC<ImageProps> = ({
 
             img.src = src;
             img.onload = () => {
+              if (!ref?.current) {
+                return null;
+              }
               ref.current.setAttribute("src", src);
+              setLoadStatus(true);
+            };
+            img.onerror = () => {
+              if (!ref?.current) {
+                return null;
+              }
+              ref.current.setAttribute("src", placeholderSrc);
               setLoadStatus(true);
             };
           }

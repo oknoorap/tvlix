@@ -267,6 +267,7 @@ const useChatHook = () => {
 
   // Init chat on load
   useEffect(() => {
+    if (!process.browser) return;
     setConnectionStatus(false);
     if (!channelId) {
       return;
