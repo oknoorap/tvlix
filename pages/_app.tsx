@@ -1,8 +1,13 @@
-import "assets/styles/app.scss";
-import "assets/styles/tailwinds.scss";
+import { ChakraProvider } from "@chakra-ui/react";
+
+import defaultTheme from "themes/default";
 
 const App = ({ Component, pageProps }) => {
-  return <Component {...pageProps} />;
+  return (
+    <ChakraProvider theme={defaultTheme}>
+      <Component {...pageProps} />
+    </ChakraProvider>
+  );
 };
 
 export default App;

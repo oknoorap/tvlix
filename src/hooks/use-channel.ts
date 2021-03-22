@@ -25,32 +25,40 @@ export type Channel = {
   hash?: string;
 };
 
+export const parseM3U = (string: string) => {
+  const { items } = playlistParser.parse(string);
+  const channels = items
+    .map((item) => ({
+      ...item.tvg,
+      name: item.name,
+      group: item.group.title || "Uncategorized",
+      url: item.url,
+    }))
+    .map((item) => {
+      const slug = slugify(item.name, {
+        lower: true,
+        remove: /\(\)\/\./g,
+        replacement: "-",
+      });
+      const hashed = hash(JSON.stringify(item));
+      const link = `channel-${hashed}--${slug}`;
+      return {
+        ...item,
+        slug,
+        link,
+        hash: hashed,
+      };
+    });
+
+  return channels;
+};
+
 export const fetchChannels = async () => {
   const url = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/channels.m3u`;
   try {
     const response = await fetch(url);
     const text = await response.text();
-    const { items } = playlistParser.parse(text);
-    const channels = items
-      .map((item) => ({
-        ...item.tvg,
-        name: item.name,
-        group: item.group.title || "Uncategorized",
-        url: item.url,
-      }))
-      .map((item) => {
-        const slug = slugify(item.name).toLowerCase();
-        const hashed = hash(JSON.stringify(item));
-        const link = `channel-${hashed}--${slug}`;
-        return {
-          ...item,
-          slug,
-          link,
-          hash: hashed,
-        };
-      });
-
-    return channels;
+    return parseM3U(text);
   } catch (err) {
     console.error(err);
     console.log(`Can't fetch channels please reload`);
@@ -80,7 +88,7 @@ const useChannelHook = (initialChannel: Channel) => {
     groups.sort((a, z) => a.localeCompare(z));
     return groups;
   }, [channelGroups, groupBy]);
-  const [selectedFilter, setSelectedFilter] = useState(groupKeys[0]);
+  const [selectedCategory, setCategory] = useState(groupKeys[0]);
 
   const randomizeChannel = useCallback(
     (customChannels?: Channel[]) => {
@@ -91,6 +99,51 @@ const useChannelHook = (initialChannel: Channel) => {
     },
     [channels]
   );
+
+  const channelList = useMemo(
+    () =>
+      groupBy === EChannelGroupBy.Country
+        ? groupKeys
+        : groupKeys
+            .slice(1, groupKeys.length)
+            .filter((item) =>
+              selectedCategory === "All" ? true : item === selectedCategory
+            ),
+    [groupKeys, selectedCategory]
+  );
+
+  const categoryMenus = useMemo(
+    () =>
+      groupKeys.map((item) => ({
+        id: slugify(item),
+        label: item,
+        isSelected: selectedCategory === item,
+        onClick() {
+          setCategory(item);
+        },
+      })),
+    [groupKeys, selectedCategory]
+  );
+
+  const groupByMenus = [
+    {
+      id: EChannelGroupBy.Country,
+      label: "Countries",
+      isSelected: groupBy === EChannelGroupBy.Country,
+      onClick() {
+        setGroupBy(EChannelGroupBy.Country);
+      },
+    },
+
+    {
+      id: EChannelGroupBy.Category,
+      label: "Categories",
+      isSelected: groupBy === EChannelGroupBy.Category,
+      onClick() {
+        setGroupBy(EChannelGroupBy.Category);
+      },
+    },
+  ];
 
   useEffect(() => {
     if (!process.browser) return;
@@ -111,11 +164,11 @@ const useChannelHook = (initialChannel: Channel) => {
     currentChannel,
     randomizeChannel,
     groupBy,
-    setGroupBy,
     channelGroups,
-    groupKeys,
-    selectedFilter,
-    setSelectedFilter,
+    channelList,
+    groupByMenus,
+    categoryMenus,
+    selectedCategory,
   };
 };
 

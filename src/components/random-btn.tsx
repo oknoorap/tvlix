@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Icon } from "@chakra-ui/react";
 import { GrRotateRight as RandomIcon } from "react-icons/gr";
 
 type RandomIconProps = {
@@ -7,7 +8,13 @@ type RandomIconProps = {
 
 const RandomButton: FC<RandomIconProps> = ({ onClick }) => {
   return (
-    <RandomIcon className="fill-current ml-1 select-none" onClick={onClick} />
+    <Icon
+      as={RandomIcon}
+      fill="current"
+      ml="1"
+      userSelect="none"
+      onClick={onClick}
+    />
   );
 };
 

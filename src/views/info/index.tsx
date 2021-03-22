@@ -1,18 +1,25 @@
-import { useState } from "react";
+import { Box, Icon, useDisclosure } from "@chakra-ui/react";
 import { AiOutlineInfoCircle as InfoIcon } from "react-icons/ai";
 
 import InfoModal from "./modal";
 
 const InfoView = () => {
-  const [isShowModal, setModalVisibility] = useState<boolean>(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <>
-      <InfoIcon
-        className="self-start cursor-pointer w-6 h-6 fill-current text-white ml-auto"
-        onClick={() => setModalVisibility(true)}
+    <Box>
+      <Icon
+        as={InfoIcon}
+        w="6"
+        h="6"
+        ml="auto"
+        fill="current"
+        alignSelf="flex-start"
+        cursor="pointer"
+        color="white"
+        onClick={onOpen}
       />
-      {isShowModal && <InfoModal onClose={() => setModalVisibility(false)} />}
-    </>
+      <InfoModal isOpen={isOpen} onClose={onClose} />
+    </Box>
   );
 };
 

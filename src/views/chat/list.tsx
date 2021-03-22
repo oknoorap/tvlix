@@ -1,44 +1,52 @@
-import cx from "classnames";
+import { Box } from "@chakra-ui/react";
 
 import { useChat } from "hooks/use-chat";
-
-import styles from "./chat.module.scss";
 
 const ChatList = () => {
   const { chats } = useChat();
 
   return (
-    <div className="w-56 mb-4">
+    <Box w="56" mb="4">
       {chats.map(({ username, char, color, message }, index) => {
-        const transparentsChatClassName =
+        const opacity =
           chats.length > 7
-            ? {
-                "opacity-80": index === 4,
-                "opacity-70": index === 3,
-                "opacity-50": index === 2,
-                "opacity-40 select-none": index === 1,
-                "opacity-10 select-none": index === 0,
-              }
+            ? index === 4
+              ? 0.8
+              : index === 3
+              ? 0.7
+              : index === 2
+              ? 0.5
+              : index === 1
+              ? 0.4
+              : index === 0
+              ? 0.1
+              : null
             : {};
 
         return (
-          <div
-            className={cx(
-              "text-white leading-tight",
-              styles["text-shadow"],
-              transparentsChatClassName
-            )}
+          <Box
             key={`chat-${index}`}
+            color="white"
+            lineHeight="shorter"
+            userSelect={index >= 1 ? "none" : null}
+            textShadow="darker"
+            opacity={opacity}
           >
-            <span className="mr-2 text-sm">
-              <span className="mr-1">{char}</span>{" "}
-              <strong style={{ color }}>{username}</strong>
-            </span>
-            <span className="text-xs">{message}</span>
-          </div>
+            <Box as="span" mr="2" fontSize="sm">
+              <Box as="span" mr="1">
+                {char}
+              </Box>
+              <Box as="strong" color={color}>
+                {username}
+              </Box>
+            </Box>
+            <Box as="span" fontSize="xs">
+              {message}
+            </Box>
+          </Box>
         );
       })}
-    </div>
+    </Box>
   );
 };
 

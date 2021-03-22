@@ -1,5 +1,5 @@
 import { ChannelProvider } from "hooks/use-channel";
-import Navbar from "components/navbar";
+import Navbar from "layouts/navbar";
 
 import ChannelExplorer from "views/channel-explorer";
 import ChannelExplorerNavbar from "views/channel-explorer/navbar";
@@ -9,7 +9,7 @@ const ViewChannelPage = () => {
   return (
     <ChannelProvider>
       <ChannelExplorer>
-        <Navbar align="center" withBg>
+        <Navbar>
           <ChannelExplorerNavbar />
           <Info />
         </Navbar>

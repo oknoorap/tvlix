@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Box } from "@chakra-ui/react";
 
 import { useVideoPlayer } from "hooks/use-video-player";
 import { useChannel } from "hooks/use-channel";
@@ -24,13 +25,13 @@ const ChatView = () => {
   }
 
   return (
-    <div className="absolute bottom-0 right-0 p-4 z-20">
+    <Box position="absolute" right="0" bottom="0" p="4" zIndex="20">
       <ChatList />
-      <div className="relative">
+      <Box position="relative">
         <ChatInput />
         <Settings />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

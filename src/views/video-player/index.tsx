@@ -1,4 +1,5 @@
 import { useEffect, useCallback, FC } from "react";
+import { Box, Flex } from "@chakra-ui/react";
 import useSound from "use-sound";
 import dynamic from "next/dynamic";
 
@@ -52,22 +53,22 @@ const CinemaViewer: FC = ({ children }) => {
   }, [isRequestReload, shuffleChannel]);
 
   return (
-    <div className="group text-white">
+    <Box role="group" color="white">
       {children}
 
       <MediaPlayer />
 
-      <div className="absolute top-0 left-0 w-screen h-screen">
-        <div className="w-full h-full flex items-center justify-center">
+      <Box position="absolute" top="0" left="0" w="100vw" h="100vh">
+        <Flex w="full" h="full" alignItems="center" justifyContent="center">
           <Spinner onShuffle={shuffleChannel} />
           <ShuffleButton onClick={shuffleChannel} />
-        </div>
-      </div>
+        </Flex>
+      </Box>
 
       <ChatProvider>
         <Chat />
       </ChatProvider>
-    </div>
+    </Box>
   );
 };
 

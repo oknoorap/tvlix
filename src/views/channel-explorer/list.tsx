@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { Box, Heading } from "@chakra-ui/react";
 
 import { useChannel, EChannelGroupBy } from "hooks/use-channel";
 import Country from "components/country";
@@ -6,34 +6,36 @@ import Country from "components/country";
 import ChannelGroupItem from "./item";
 
 const ChannelGroupList = () => {
-  const { groupKeys, channelGroups, groupBy, selectedFilter } = useChannel();
-  const isGroupByCountry = groupBy === EChannelGroupBy.Country;
-  const groups = useMemo(
-    () =>
-      isGroupByCountry
-        ? groupKeys
-        : groupKeys
-            .slice(1, groupKeys.length)
-            .filter((item) =>
-              selectedFilter === "All" ? true : item === selectedFilter
-            ),
-    [groupKeys, selectedFilter]
-  );
+  const { groupBy, channelList, channelGroups } = useChannel();
 
   return (
-    <div className="p-4 mt-20">
-      {groups.map((group) => {
-        const title = isGroupByCountry ? <Country code={group} /> : group;
+    <Box p="4" mt="20">
+      {channelList.map((group) => {
+        const title =
+          groupBy === EChannelGroupBy.Country ? (
+            <Country code={group} />
+          ) : (
+            group
+          );
         return (
-          <div key={`group-${group.toLowerCase()}`} className="mb-10 last:mb-0">
-            <h2 className="text-white text-3xl font-bold border-b border-mirage-400 pb-2 mb-6">
+          <Box key={`group-${group.toLowerCase()}`} _notLast={{ mb: 10 }}>
+            <Heading
+              as="h2"
+              color="white"
+              fontSize="3xl"
+              fontWeight="bold"
+              borderBottom="1"
+              borderBottomColor="mirage.400"
+              pb="2"
+              mb="6"
+            >
               {title}
-            </h2>
+            </Heading>
             <ChannelGroupItem items={channelGroups[group]} />
-          </div>
+          </Box>
         );
       })}
-    </div>
+    </Box>
   );
 };
 

@@ -4,7 +4,7 @@ import HLS from "hls.js";
 
 const useVideoPlayerHook = () => {
   const hlsRef = useRef<HLS>();
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement & { align: any }>();
   const [isPlayerReady, setPlayerReadyStatus] = useState<boolean>(false);
   const [isVideoReady, setVideoReadyStatus] = useState<boolean>(false);
   const [isRequestReload, setReloadStatus] = useState<boolean>(false);

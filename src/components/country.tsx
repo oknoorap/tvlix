@@ -1,4 +1,5 @@
 import { FC, ReactText } from "react";
+import { Box, Icon } from "@chakra-ui/react";
 import CountryISO from "i18n-iso-countries";
 import Flag from "react-country-flag";
 
@@ -11,10 +12,10 @@ type CountryProps = {
 const Country: FC<CountryProps> = ({ code }) => {
   const country = CountryISO.getName(code, "en", { select: "official" });
   return (
-    <span className="inline-flex leading-none">
-      <Flag countryCode={code} svg title={country} className="mr-2" />
-      <span>{country}</span>
-    </span>
+    <Box as="span" display="inline-flex" lineHeight="none">
+      <Icon as={Flag} countryCode={code} svg title={country} mr="2" />
+      <Box as="span">{country}</Box>
+    </Box>
   );
 };
 

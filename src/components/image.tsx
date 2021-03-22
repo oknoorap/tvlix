@@ -1,5 +1,4 @@
 import { useRef, FC, useEffect, useState } from "react";
-import cx from "classnames";
 
 type ImageProps = {
   src?: string;
@@ -109,12 +108,12 @@ const ImageComponent: FC<ImageProps> = ({
       onMouseOver={onHover}
       onMouseLeave={onLeave}
       loading="lazy"
-      className={cx(
-        {
-          "pointer-events-none": !interaction,
-        },
-        className
-      )}
+      // className={cx(
+      //   {
+      //     "pointer-events-none": !interaction,
+      //   },
+      //   className
+      // )}
     />
   );
 };

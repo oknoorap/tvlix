@@ -1,10 +1,13 @@
 import { FC } from "react";
-import Link from "next/link";
+import { Flex, Box, SimpleGrid, Link } from "@chakra-ui/react";
+import { opacify } from "polished";
+import NextLink from "next/link";
 
 import useIntersection from "hooks/use-intersection";
 import { useChannel, Channel, EChannelGroupBy } from "hooks/use-channel";
 import Image from "components/image";
 import Country from "components/country";
+import colors from "themes/default/colors";
 
 type ChannelGroupItem = {
   items: Channel[];
@@ -15,36 +18,71 @@ const ChannelGroupItem: FC<ChannelGroupItem> = ({ items }) => {
   const { groupBy } = useChannel();
   const imagePlaceholder = require("../../../public/channel.png?url");
   return (
-    <div className="grid grid-cols-5 gap-x-5 gap-y-5" ref={ref}>
+    <SimpleGrid ref={ref} columns={5} columnGap="5" rowGap="5">
       {isRender &&
         items.map((item, index) => (
-          <div className="relative group" key={`slider-${index}`}>
+          <Box key={`slider-${index}`} role="group" position="relative">
             <Image
               src={item.logo || imagePlaceholder}
               placeholderSrc={imagePlaceholder}
-              className="w-full h-auto min-h-full max-h-32"
+              // className="w-full h-auto min-h-full max-h-32"
               alt=""
             />
-            <div className="absolute top-0 left-0 w-full h-full bg-mirage-500 bg-opacity-75 group-hover:bg-opacity-100 group-hover:bg-mirage-400 transition-opacity z-10" />
-            <div className="absolute bottom-0 left-0 w-full h-full flex items-center justify-center z-10">
-              <Link href={`/watch/${item.link}`} passHref>
-                <a className="text-gray-400 group-hover:text-white text-xl text-center flex flex-col items-center">
-                  <span className="w-2/3 block font-bold whitespace-no-wrap leading-tight mb-2">
+            <Box
+              position="absolute"
+              top="0"
+              left="0"
+              w="full"
+              h="full"
+              bgColor={opacify(0.75, colors.mirage["500"])}
+              transition="opacity"
+              zIndex="10"
+              _groupHover={{
+                bgColor: opacify(1, colors.mirage["500"]),
+              }}
+            />
+            <Flex
+              alignItems="center"
+              justifyContent="center"
+              position="absolute"
+              left="0"
+              bottom="0"
+              w="full"
+              h="full"
+            >
+              <NextLink href={`/watch/${item.link}`} passHref>
+                <Link
+                  display="flex"
+                  alignItems="center"
+                  flexDir="column"
+                  color="gray.500"
+                  fontSize="xl"
+                  textAlign="center"
+                  _groupHover={{ color: "white" }}
+                >
+                  <Box
+                    display="block"
+                    as="span"
+                    w="66%"
+                    whiteSpace="nowrap"
+                    lineHeight="shorter"
+                    mb="2"
+                  >
                     {item.name}
-                  </span>
-                  <span className="block text-sm">
+                  </Box>
+                  <Box display="block" as="span">
                     {groupBy === EChannelGroupBy.Category ? (
                       <Country code={item.country} />
                     ) : (
                       item.group
                     )}
-                  </span>
-                </a>
-              </Link>
-            </div>
-          </div>
+                  </Box>
+                </Link>
+              </NextLink>
+            </Flex>
+          </Box>
         ))}
-    </div>
+    </SimpleGrid>
   );
 };
 
