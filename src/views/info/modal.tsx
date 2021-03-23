@@ -59,7 +59,7 @@ const InfoModal: FC<InfoModalProps> = ({ isOpen, onClose = () => {} }) => {
             position="relative"
             zIndex="40"
             rounded="lg"
-            color="gray.500"
+            color="mirage.500"
           >
             <Flex
               flexDir="column"
