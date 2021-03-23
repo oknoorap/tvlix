@@ -44,7 +44,7 @@ const ChannelGroupByDropdown = () => {
               {groupByMenus.find((item) => item.isSelected)?.label}
             </Box>
           </MenuButton>
-          <MenuList minWidth="150px" bgColor="mirage.300">
+          <MenuList fontSize="sm" minWidth="150px" bgColor="mirage.300">
             {groupByMenus.map(({ id, label, onClick, isSelected }) => (
               <MenuItem
                 key={`menu-${id}`}

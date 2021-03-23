@@ -14,9 +14,9 @@ type NavbarProps = {
 
 const Navbar: FC<NavbarProps> = ({ children, variant = "default" }) => {
   const { pathname } = useRouter();
-  const isHome = pathname === "/";
-  const href = isHome ? "/view-channels" : "/";
-  const textlink = isHome ? "View Channels" : "Random Channels";
+  const isViewChannelLink = pathname === "/" || pathname.includes("/watch");
+  const href = isViewChannelLink ? "/view-channels" : "/";
+  const textlink = isViewChannelLink ? "View Channels" : "Random Channels";
   const isVariantDefault = variant === "default";
 
   return (

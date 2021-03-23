@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import {
   Box,
   Link,
@@ -12,7 +13,7 @@ import {
   PopoverBody,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CgList as SelectCategoryIcon } from "react-icons/cg";
+import { ImStarEmpty as SelectCategoryIcon } from "react-icons/im";
 
 import { useChannel } from "hooks/use-channel";
 
@@ -36,7 +37,9 @@ const ChannelGroupFilterByCategory = () => {
           _active={{ bgColor: "mirage.300" }}
           _focus={{ outline: "none" }}
         >
-          <Box as="span">{selectedCategory}</Box>
+          <Box as="span" fontSize="sm">
+            {selectedCategory}
+          </Box>
         </Button>
       </PopoverTrigger>
       <PopoverContent bgColor="mirage.300" _focus={{ outline: "none" }}>
@@ -44,13 +47,14 @@ const ChannelGroupFilterByCategory = () => {
         <PopoverHeader display="flex" alignItems="center">
           <Icon as={SelectCategoryIcon} w="4" h="auto" mr="2" />
           <Box as="span" fontWeight="bold">
-            Select Category!
+            Select Category
           </Box>
         </PopoverHeader>
         <PopoverBody>
           <SimpleGrid columns={2} color="gray.300">
             {categoryMenus.map(({ id, label, onClick, isSelected }) => {
-              const handleClick = () => {
+              const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+                event.preventDefault();
                 onClick();
                 onClose();
               };

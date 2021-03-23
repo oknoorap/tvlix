@@ -2,7 +2,7 @@ import { GetStaticProps, GetStaticPaths } from "next";
 
 import { ChannelProvider } from "hooks/use-channel";
 import { VideoPlayerProvider } from "hooks/use-video-player";
-import { fetchChannels, parseM3U } from "hooks/use-channel";
+import { parseM3U } from "hooks/use-channel";
 
 import VideoPlayer from "views/video-player";
 import VideoTitle from "views/video-player/title";
@@ -27,10 +27,11 @@ const ChannelPage = ({ channel }) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   const playlist = await import("../../public/channels.m3u");
   const channels = parseM3U(playlist.default);
+  const paths = channels.map((item) => ({
+    params: { id: item.link },
+  }));
   return {
-    paths: channels.map((item) => ({
-      params: { id: item.link },
-    })),
+    paths,
     fallback: false,
   };
 };
@@ -38,8 +39,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const playlist = await import("../../public/channels.m3u");
   const channels = parseM3U(playlist.default);
+  const channel = channels.find((item) => item.link === context.params.id);
   const props = {
-    channel: channels.find((item) => item.link === context.params.id),
+    channel,
   };
 
   return {

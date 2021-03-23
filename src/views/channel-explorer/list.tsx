@@ -1,22 +1,33 @@
-import { Box, Heading } from "@chakra-ui/react";
+import { Box, Heading, Icon } from "@chakra-ui/react";
+import Flag from "react-country-flag";
 
 import { useChannel, EChannelGroupBy } from "hooks/use-channel";
-import Country from "components/country";
 
 import ChannelGroupItem from "./item";
 
 const ChannelGroupList = () => {
-  const { groupBy, channelList, channelGroups } = useChannel();
+  const { groupBy, channelGroups, channelGroupBy, countries } = useChannel();
 
   return (
     <Box p="4" mt="20">
-      {channelList.map((group) => {
-        const title =
-          groupBy === EChannelGroupBy.Country ? (
-            <Country code={group} />
-          ) : (
-            group
-          );
+      {channelGroups.map((group) => {
+        const items = channelGroupBy[group];
+        const groupByCategory = groupBy === EChannelGroupBy.Category;
+        let { code = group, country = group, flag = false } =
+          (!groupByCategory && countries.find((item) => item.code === group)) ||
+          {};
+
+        const title = groupByCategory ? (
+          group
+        ) : (
+          <Box as="span" display="inline-flex" lineHeight="none">
+            {flag && (
+              <Icon svg as={Flag} countryCode={code} title={country} mr="2" />
+            )}
+            <Box as="span">{country}</Box>
+          </Box>
+        );
+
         return (
           <Box key={`group-${group.toLowerCase()}`} _notLast={{ mb: 10 }}>
             <Heading
@@ -31,7 +42,7 @@ const ChannelGroupList = () => {
             >
               {title}
             </Heading>
-            <ChannelGroupItem items={channelGroups[group]} />
+            <ChannelGroupItem items={items} />
           </Box>
         );
       })}

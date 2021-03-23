@@ -1,13 +1,14 @@
 import { FC } from "react";
-import { Flex, Box, SimpleGrid, Link } from "@chakra-ui/react";
-import { opacify } from "polished";
+import { Flex, Box, SimpleGrid, Link, Image } from "@chakra-ui/react";
+import { rgba } from "polished";
 import NextLink from "next/link";
 
 import useIntersection from "hooks/use-intersection";
 import { useChannel, Channel, EChannelGroupBy } from "hooks/use-channel";
-import Image from "components/image";
 import Country from "components/country";
 import colors from "themes/default/colors";
+
+import ChannelLogo from "./logo";
 
 type ChannelGroupItem = {
   items: Channel[];
@@ -16,61 +17,64 @@ type ChannelGroupItem = {
 const ChannelGroupItem: FC<ChannelGroupItem> = ({ items }) => {
   const { ref, isRender } = useIntersection();
   const { groupBy } = useChannel();
-  const imagePlaceholder = require("../../../public/channel.png?url");
+
   return (
     <SimpleGrid ref={ref} columns={5} columnGap="5" rowGap="5">
       {isRender &&
         items.map((item, index) => (
-          <Box key={`slider-${index}`} role="group" position="relative">
-            <Image
-              src={item.logo || imagePlaceholder}
-              placeholderSrc={imagePlaceholder}
-              // className="w-full h-auto min-h-full max-h-32"
-              alt=""
-            />
+          <Box
+            key={`slider-${index}`}
+            role="group"
+            position="relative"
+            userSelect="none"
+          >
+            <ChannelLogo src={item.logo} alt={item.name} />
             <Box
               position="absolute"
               top="0"
               left="0"
               w="full"
               h="full"
-              bgColor={opacify(0.75, colors.mirage["500"])}
+              bgColor={rgba(colors.mirage["500"], 0.8)}
               transition="opacity"
+              pointerEvents="none"
               zIndex="10"
-              _groupHover={{
-                bgColor: opacify(1, colors.mirage["500"]),
-              }}
+              _groupHover={{ bgColor: rgba(colors.mirage["500"], 0.55) }}
             />
             <Flex
+              position="absolute"
+              top="0"
+              left="0"
               alignItems="center"
               justifyContent="center"
-              position="absolute"
-              left="0"
-              bottom="0"
               w="full"
               h="full"
+              zIndex="11"
             >
               <NextLink href={`/watch/${item.link}`} passHref>
                 <Link
                   display="flex"
                   alignItems="center"
+                  justifyContent="center"
                   flexDir="column"
-                  color="gray.500"
+                  w="full"
                   fontSize="xl"
                   textAlign="center"
+                  color="gray.400"
+                  _hover={{ textDecor: "none" }}
+                  _focus={{ outline: "none" }}
                   _groupHover={{ color: "white" }}
                 >
                   <Box
-                    display="block"
-                    as="span"
+                    as="strong"
                     w="66%"
-                    whiteSpace="nowrap"
-                    lineHeight="shorter"
                     mb="2"
+                    lineHeight="shorter"
+                    _groupHover={{ textDecor: "underline" }}
                   >
                     {item.name}
                   </Box>
-                  <Box display="block" as="span">
+                  <Box as="span" fontSize="sm">
                     {groupBy === EChannelGroupBy.Category ? (
                       <Country code={item.country} />
                     ) : (

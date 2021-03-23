@@ -4,6 +4,9 @@ import playlistParser from "iptv-playlist-parser";
 import slugify from "slugify";
 import shuffle from "lodash.shuffle";
 import _groupBy from "lodash.groupby";
+import flatten from "lodash.flatten";
+import uniqBy from "lodash.uniqby";
+import CountryISO from "i18n-iso-countries";
 
 import { hash } from "utils/helpers";
 
@@ -25,28 +28,38 @@ export type Channel = {
   hash?: string;
 };
 
+type Filter = string[];
+
+export const Uncategorized = "Uncategorized";
+
+export const UncategorizedCode = "UC";
+
+type Country = { country: string; code: string; flag: boolean };
+
 export const parseM3U = (string: string) => {
   const { items } = playlistParser.parse(string);
   const channels = items
     .map((item) => ({
       ...item.tvg,
       name: item.name,
-      group: item.group.title || "Uncategorized",
+      group: item.group.title || Uncategorized,
       url: item.url,
     }))
     .map((item) => {
       const slug = slugify(item.name, {
         lower: true,
-        remove: /\(\)\/\./g,
+        remove: /[\(\)\/\.]/g,
         replacement: "-",
       });
-      const hashed = hash(JSON.stringify(item));
-      const link = `channel-${hashed}--${slug}`;
+      const hashes = hash(JSON.stringify(item));
+      const start = hashes.slice(0, 5);
+      const end = hashes.slice(-5);
+      const link = `channel-${slug}-${start + end}`;
       return {
         ...item,
         slug,
         link,
-        hash: hashed,
+        hash: hashes,
       };
     });
 
@@ -72,58 +85,68 @@ const useChannelHook = (initialChannel: Channel) => {
   const [groupBy, setGroupBy] = useState<EChannelGroupBy>(
     EChannelGroupBy.Category
   );
-  const channelGroups = useMemo(
-    () =>
-      _groupBy(
-        channels,
-        groupBy === EChannelGroupBy.Category ? "group" : "country"
-      ),
-    [channels, groupBy]
+
+  const channelGroupBy = useMemo<{ [key: string]: Channel[] }>(() => {
+    if (groupBy === EChannelGroupBy.Category) {
+      return _groupBy(channels, "group");
+    }
+
+    const items = {};
+    const countries = Array.from(
+      new Set(flatten(channels.map((item) => item.country.split(";"))))
+    ).map((item) => (!item ? UncategorizedCode : item));
+
+    channels.forEach((item) => {
+      const { country } = item;
+      const itemCountries = country.split(";");
+      itemCountries.forEach((country) => {
+        if (!country) country = UncategorizedCode;
+        if (!items[country]) items[country] = [];
+        if (countries.includes(country)) {
+          items[country].push(item);
+        }
+      });
+    });
+    return items;
+  }, [channels, groupBy]);
+
+  const filters = useMemo<Filter>(
+    () => [
+      "All",
+      ...Object.keys(channelGroupBy).sort((a, z) => a.localeCompare(z)),
+    ],
+    [channelGroupBy, groupBy]
   );
-  const groupKeys = useMemo(() => {
-    const groups =
-      groupBy === EChannelGroupBy.Country
-        ? Object.keys(channelGroups)
-        : ["All", ...Object.keys(channelGroups)];
-    groups.sort((a, z) => a.localeCompare(z));
-    return groups;
-  }, [channelGroups, groupBy]);
-  const [selectedCategory, setCategory] = useState(groupKeys[0]);
+
+  const [firstFilter] = filters;
+  const [selectedCategory, setCategory] = useState(firstFilter);
+  const [selectedCountry, setCountry] = useState(firstFilter);
 
   const randomizeChannel = useCallback(
     (customChannels?: Channel[]) => {
-      const channel = shuffle(
+      const [channel] = shuffle(
         channels.length > 0 ? channels : customChannels
-      )?.[0];
+      );
       setCurrentChannel(channel);
     },
     [channels]
   );
 
-  const channelList = useMemo(
-    () =>
-      groupBy === EChannelGroupBy.Country
-        ? groupKeys
-        : groupKeys
-            .slice(1, groupKeys.length)
-            .filter((item) =>
-              selectedCategory === "All" ? true : item === selectedCategory
-            ),
-    [groupKeys, selectedCategory]
-  );
+  const channelGroups = useMemo(() => {
+    if (groupBy === EChannelGroupBy.Country) {
+      return filters
+        .slice(1, filters.length)
+        .filter((item) =>
+          selectedCountry === "All" ? true : item === selectedCountry
+        );
+    }
 
-  const categoryMenus = useMemo(
-    () =>
-      groupKeys.map((item) => ({
-        id: slugify(item),
-        label: item,
-        isSelected: selectedCategory === item,
-        onClick() {
-          setCategory(item);
-        },
-      })),
-    [groupKeys, selectedCategory]
-  );
+    return filters
+      .slice(1, filters.length)
+      .filter((item) =>
+        selectedCategory === "All" ? true : item === selectedCategory
+      );
+  }, [filters, selectedCategory, selectedCountry]);
 
   const groupByMenus = [
     {
@@ -145,17 +168,83 @@ const useChannelHook = (initialChannel: Channel) => {
     },
   ];
 
+  const categoryMenus = useMemo(() => {
+    if (groupBy === EChannelGroupBy.Country) return [];
+    return filters.map((item) => ({
+      id: slugify(item),
+      label: item,
+      isSelected: selectedCategory === item,
+      onClick() {
+        setCategory(item);
+      },
+    }));
+  }, [groupBy, filters, selectedCategory]);
+
+  const countries = useMemo<Country[]>(
+    () =>
+      uniqBy(
+        filters.map((code) => {
+          let countryCode = code;
+          [
+            ["All", "All"],
+            ["ARAB", "AR"],
+            ["UK", "GBR"],
+          ].forEach(([oldCode, newCode]) => {
+            if (countryCode === oldCode) countryCode = newCode;
+          });
+
+          let country = CountryISO.getName(countryCode, "en", {
+            select: "official",
+          });
+          let flag = false;
+          if (!country) country = countryCode;
+          if (country !== countryCode) flag = true;
+          if (code === UncategorizedCode) country = Uncategorized;
+          return {
+            code,
+            country,
+            flag,
+          };
+        }),
+        "code"
+      ),
+    [filters]
+  );
+
+  console.log({ countries });
+
+  const countryMenus = useMemo(() => {
+    if (groupBy === EChannelGroupBy.Category) return [];
+    return countries.map(({ code: id, country: label, flag }) => {
+      return {
+        id,
+        label,
+        flag,
+        isSelected: selectedCountry === id,
+        onClick() {
+          setCountry(id);
+        },
+      };
+    });
+  }, [groupBy, countries, selectedCountry]);
+
   useEffect(() => {
     if (!process.browser) return;
+    let subscribed = true;
+
     const getChannels = async () => {
       const channels = await fetchChannels();
+
       setChannels(channels);
       setChannelLoadStatus(true);
+
       if (!initialChannel) {
         randomizeChannel(channels);
       }
     };
+
     getChannels();
+    return void (subscribed = false);
   }, []);
 
   return {
@@ -164,11 +253,14 @@ const useChannelHook = (initialChannel: Channel) => {
     currentChannel,
     randomizeChannel,
     groupBy,
+    channelGroupBy,
     channelGroups,
-    channelList,
     groupByMenus,
     categoryMenus,
+    countries,
+    countryMenus,
     selectedCategory,
+    selectedCountry,
   };
 };
 
