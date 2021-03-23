@@ -1,11 +1,11 @@
 import { FC } from "react";
-import { Flex, Box, SimpleGrid, Link, Image } from "@chakra-ui/react";
+import { Flex, Box, SimpleGrid, Link, Icon, Text } from "@chakra-ui/react";
 import { rgba } from "polished";
 import NextLink from "next/link";
+import Flag from "react-country-flag";
 
 import useIntersection from "hooks/use-intersection";
 import { useChannel, Channel, EChannelGroupBy } from "hooks/use-channel";
-import Country from "components/country";
 import colors from "themes/default/colors";
 
 import ChannelLogo from "./logo";
@@ -20,38 +20,40 @@ const ChannelGroupItem: FC<ChannelGroupItem> = ({ items }) => {
 
   return (
     <SimpleGrid ref={ref} columns={5} columnGap="5" rowGap="5">
+      {!isRender &&
+        items.map((_, index) => <Box minH="5px" key={`item-${index}`} />)}
       {isRender &&
-        items.map((item, index) => (
+        items.map(({ logo, name, link, group, flag, code, country }, index) => (
           <Box
-            key={`slider-${index}`}
+            key={`item-${index}`}
             role="group"
             position="relative"
             userSelect="none"
           >
-            <ChannelLogo src={item.logo} alt={item.name} />
+            <ChannelLogo src={logo} alt={name} />
             <Box
-              position="absolute"
-              top="0"
-              left="0"
               w="full"
               h="full"
-              bgColor={rgba(colors.mirage["500"], 0.8)}
+              top="0"
+              left="0"
+              zIndex="10"
+              position="absolute"
               transition="opacity"
               pointerEvents="none"
-              zIndex="10"
+              bgColor={rgba(colors.mirage["500"], 0.8)}
               _groupHover={{ bgColor: rgba(colors.mirage["500"], 0.55) }}
             />
             <Flex
-              position="absolute"
-              top="0"
-              left="0"
-              alignItems="center"
-              justifyContent="center"
               w="full"
               h="full"
+              top="0"
+              left="0"
               zIndex="11"
+              position="absolute"
+              alignItems="center"
+              justifyContent="center"
             >
-              <NextLink href={`/watch/${item.link}`} passHref>
+              <NextLink href={`/watch/${link}`} passHref>
                 <Link
                   display="flex"
                   alignItems="center"
@@ -72,13 +74,26 @@ const ChannelGroupItem: FC<ChannelGroupItem> = ({ items }) => {
                     lineHeight="shorter"
                     _groupHover={{ textDecor: "underline" }}
                   >
-                    {item.name}
+                    {name}
                   </Box>
                   <Box as="span" fontSize="sm">
-                    {groupBy === EChannelGroupBy.Category ? (
-                      <Country code={item.country} />
+                    {groupBy === EChannelGroupBy.Country ? (
+                      group
                     ) : (
-                      item.group
+                      <Box as="span" display="inline-flex" lineHeight="none">
+                        {flag && (
+                          <Icon
+                            svg
+                            as={Flag}
+                            countryCode={code}
+                            title={country}
+                            mr="2"
+                          />
+                        )}
+                        <Text as="span" isTruncated>
+                          {country}
+                        </Text>
+                      </Box>
                     )}
                   </Box>
                 </Link>

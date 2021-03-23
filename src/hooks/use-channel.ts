@@ -3,12 +3,12 @@ import { createContainer } from "unstated-next";
 import playlistParser from "iptv-playlist-parser";
 import slugify from "slugify";
 import shuffle from "lodash.shuffle";
-import _groupBy from "lodash.groupby";
 import flatten from "lodash.flatten";
-import uniqBy from "lodash.uniqby";
 import CountryISO from "i18n-iso-countries";
 
 import { hash } from "utils/helpers";
+
+CountryISO.registerLocale(require("i18n-iso-countries/langs/en.json"));
 
 export enum EChannelGroupBy {
   Country,
@@ -21,6 +21,8 @@ export type Channel = {
   language: string;
   logo: string;
   country: string;
+  flag?: boolean;
+  code?: string;
   url: string;
   group: string;
   slug?: string;
@@ -34,11 +36,14 @@ export const Uncategorized = "Uncategorized";
 
 export const UncategorizedCode = "UC";
 
-type Country = { country: string; code: string; flag: boolean };
-
 export const parseM3U = (string: string) => {
   const { items } = playlistParser.parse(string);
-  const channels = items
+  const slugOpts = {
+    lower: true,
+    remove: /[\(\)\/\.]/g,
+    replacement: "-",
+  };
+  return items
     .map((item) => ({
       ...item.tvg,
       name: item.name,
@@ -46,14 +51,10 @@ export const parseM3U = (string: string) => {
       url: item.url,
     }))
     .map((item) => {
-      const slug = slugify(item.name, {
-        lower: true,
-        remove: /[\(\)\/\.]/g,
-        replacement: "-",
-      });
       const hashes = hash(JSON.stringify(item));
       const start = hashes.slice(0, 5);
       const end = hashes.slice(-5);
+      const slug = slugify(item.name, slugOpts);
       const link = `channel-${slug}-${start + end}`;
       return {
         ...item,
@@ -62,16 +63,13 @@ export const parseM3U = (string: string) => {
         hash: hashes,
       };
     });
-
-  return channels;
 };
 
 export const fetchChannels = async () => {
   const url = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/channels.m3u`;
   try {
     const response = await fetch(url);
-    const text = await response.text();
-    return parseM3U(text);
+    return parseM3U(await response.text());
   } catch (err) {
     console.error(err);
     console.log(`Can't fetch channels please reload`);
@@ -87,26 +85,59 @@ const useChannelHook = (initialChannel: Channel) => {
   );
 
   const channelGroupBy = useMemo<{ [key: string]: Channel[] }>(() => {
-    if (groupBy === EChannelGroupBy.Category) {
-      return _groupBy(channels, "group");
-    }
-
     const items = {};
     const countries = Array.from(
       new Set(flatten(channels.map((item) => item.country.split(";"))))
-    ).map((item) => (!item ? UncategorizedCode : item));
+    ).map((code: string) => {
+      [
+        ["All", "All"],
+        ["ARAB", "AR"],
+        ["UK", "GBR"],
+      ].forEach(([oldCode, newCode]) => {
+        if (code === oldCode) code = newCode;
+      });
+
+      let country = CountryISO.getName(code, "en", {
+        select: "official",
+      });
+
+      let flag = false;
+      if (!country) country = code;
+      if (country !== code) flag = true;
+      if (code === UncategorizedCode) country = Uncategorized;
+
+      return {
+        code,
+        country,
+        flag,
+      };
+    });
 
     channels.forEach((item) => {
-      const { country } = item;
+      const { country, group } = item;
       const itemCountries = country.split(";");
+
       itemCountries.forEach((country) => {
         if (!country) country = UncategorizedCode;
-        if (!items[country]) items[country] = [];
-        if (countries.includes(country)) {
-          items[country].push(item);
+        const findCountry = countries.find((item) => item.code === country);
+        if (!findCountry) return;
+
+        if (groupBy === EChannelGroupBy.Category) {
+          if (!items[group]) items[group] = [];
+          items[group].push({
+            ...item,
+            ...findCountry,
+          });
+        } else {
+          if (!items[country]) items[country] = [];
+          items[country].push({
+            ...item,
+            ...findCountry,
+          });
         }
       });
     });
+
     return items;
   }, [channels, groupBy]);
 
@@ -120,7 +151,11 @@ const useChannelHook = (initialChannel: Channel) => {
 
   const [firstFilter] = filters;
   const [selectedCategory, setCategory] = useState(firstFilter);
-  const [selectedCountry, setCountry] = useState(firstFilter);
+  const [selectedCountry, setCountry] = useState({
+    code: "All",
+    country: "All",
+    flag: false,
+  });
 
   const randomizeChannel = useCallback(
     (customChannels?: Channel[]) => {
@@ -137,7 +172,7 @@ const useChannelHook = (initialChannel: Channel) => {
       return filters
         .slice(1, filters.length)
         .filter((item) =>
-          selectedCountry === "All" ? true : item === selectedCountry
+          selectedCountry.code === "All" ? true : item === selectedCountry.code
         );
     }
 
@@ -180,53 +215,23 @@ const useChannelHook = (initialChannel: Channel) => {
     }));
   }, [groupBy, filters, selectedCategory]);
 
-  const countries = useMemo<Country[]>(
-    () =>
-      uniqBy(
-        filters.map((code) => {
-          let countryCode = code;
-          [
-            ["All", "All"],
-            ["ARAB", "AR"],
-            ["UK", "GBR"],
-          ].forEach(([oldCode, newCode]) => {
-            if (countryCode === oldCode) countryCode = newCode;
-          });
-
-          let country = CountryISO.getName(countryCode, "en", {
-            select: "official",
-          });
-          let flag = false;
-          if (!country) country = countryCode;
-          if (country !== countryCode) flag = true;
-          if (code === UncategorizedCode) country = Uncategorized;
-          return {
-            code,
-            country,
-            flag,
-          };
-        }),
-        "code"
-      ),
-    [filters]
-  );
-
-  console.log({ countries });
-
   const countryMenus = useMemo(() => {
     if (groupBy === EChannelGroupBy.Category) return [];
-    return countries.map(({ code: id, country: label, flag }) => {
+    return filters.map((item) => {
+      const { flag = false, code = "All", country = "All" } =
+        channelGroupBy[item]?.[0] || {};
       return {
-        id,
-        label,
+        id: slugify(code),
         flag,
-        isSelected: selectedCountry === id,
+        code,
+        label: country,
+        isSelected: selectedCountry.code === code,
         onClick() {
-          setCountry(id);
+          setCountry({ code, country, flag });
         },
       };
     });
-  }, [groupBy, countries, selectedCountry]);
+  }, [groupBy, channelGroupBy, filters, selectedCountry]);
 
   useEffect(() => {
     if (!process.browser) return;
@@ -257,7 +262,6 @@ const useChannelHook = (initialChannel: Channel) => {
     channelGroups,
     groupByMenus,
     categoryMenus,
-    countries,
     countryMenus,
     selectedCategory,
     selectedCountry,

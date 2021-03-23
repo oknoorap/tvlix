@@ -6,7 +6,7 @@ import { useChannel, EChannelGroupBy } from "hooks/use-channel";
 import ChannelGroupItem from "./item";
 
 const ChannelGroupList = () => {
-  const { groupBy, channelGroups, channelGroupBy, countries } = useChannel();
+  const { groupBy, channelGroups, channelGroupBy } = useChannel();
 
   return (
     <Box p="4" mt="20">
@@ -14,12 +14,9 @@ const ChannelGroupList = () => {
         const items = channelGroupBy[group];
         const groupByCategory = groupBy === EChannelGroupBy.Category;
         let { code = group, country = group, flag = false } =
-          (!groupByCategory && countries.find((item) => item.code === group)) ||
-          {};
+          (!groupByCategory && items?.[0]) || {};
 
-        const title = groupByCategory ? (
-          group
-        ) : (
+        const countryFlag = (
           <Box as="span" display="inline-flex" lineHeight="none">
             {flag && (
               <Icon svg as={Flag} countryCode={code} title={country} mr="2" />
@@ -27,6 +24,8 @@ const ChannelGroupList = () => {
             <Box as="span">{country}</Box>
           </Box>
         );
+
+        const title = groupByCategory ? group : countryFlag;
 
         return (
           <Box key={`group-${group.toLowerCase()}`} _notLast={{ mb: 10 }}>

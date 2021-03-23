@@ -43,7 +43,18 @@ const ChannelGroupFilterByCountry = () => {
             _active={{ bgColor: "mirage.300" }}
             _focus={{ outline: "none" }}
           >
-            {selectedCountry}
+            {selectedCountry.flag && (
+              <Icon
+                svg
+                as={Flag}
+                countryCode={selectedCountry.code}
+                title={selectedCountry.country}
+                mr="2"
+              />
+            )}
+            <Text as="span" isTruncated>
+              {selectedCountry.country}
+            </Text>
           </MenuButton>
           <MenuList fontSize="sm" maxW="55vw" bgColor="mirage.300">
             <SimpleGrid maxH="200px" overflow="auto" columns={4}>
