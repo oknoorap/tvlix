@@ -25,7 +25,6 @@ export type Channel = {
   code?: string;
   url: string;
   group: string;
-  slug?: string;
   link?: string;
   hash?: string;
 };
@@ -54,11 +53,9 @@ export const parseM3U = (string: string) => {
       const hashes = hash(JSON.stringify(item));
       const start = hashes.slice(0, 5);
       const end = hashes.slice(-5);
-      const slug = slugify(item.name, slugOpts);
-      const link = `channel-${slug}-${start + end}`;
+      const link = `channel-${start + end}`;
       return {
         ...item,
-        slug,
         link,
         hash: hashes,
       };
