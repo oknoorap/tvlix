@@ -1,20 +1,11 @@
-import { useChannel, EChannelGroupBy } from "hooks/use-channel";
+import SearchBox from "./search-box";
+import Dropdown from "./dropdown";
 
-import ChannelSearch from "./search";
-import ChannelGroupBy from "./group-by";
-import ChannelFilter from "./group-filter";
-
-const ChannelExplorerNavbar = () => {
-  const { groupBy } = useChannel();
-  return (
-    <>
-      <ChannelSearch />
-      <div className="flex items-center ml-4">
-        <ChannelGroupBy />
-        {groupBy === EChannelGroupBy.Category && <ChannelFilter />}
-      </div>
-    </>
-  );
-};
+const ChannelExplorerNavbar = () => (
+  <>
+    <SearchBox />
+    <Dropdown />
+  </>
+);
 
 export default ChannelExplorerNavbar;

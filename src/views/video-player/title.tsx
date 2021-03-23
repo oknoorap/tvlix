@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Flex, Box, Icon } from "@chakra-ui/react";
 import { BiTv as TVIcon } from "react-icons/bi";
 
 import { useChannel } from "hooks/use-channel";
@@ -10,10 +11,18 @@ const ChannelTitleView: FC = () => {
   }
 
   return (
-    <div className="flex items-center opacity-75 hover:opacity-100 invisible group-hover:visible mr-auto">
-      <TVIcon className="fill-current text-white w-6 h-6 mr-2" />
-      <div className="text-2xl">{currentChannel?.name}</div>
-    </div>
+    <Flex
+      alignItems="center"
+      opacity=".75"
+      visibility="hidden"
+      mr="auto"
+      textShadow="darker"
+      _hover={{ opacity: 1 }}
+      _groupHover={{ visibility: "visible" }}
+    >
+      <Icon as={TVIcon} fill="current" color="white" w="6" h="6" mr="2" />
+      <Box fontSize="2xl">{currentChannel?.name}</Box>
+    </Flex>
   );
 };
 

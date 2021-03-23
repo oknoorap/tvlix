@@ -1,10 +1,14 @@
 import { FC } from "react";
-import Link from "next/link";
+import { Flex, Box, SimpleGrid, Link, Icon, Text } from "@chakra-ui/react";
+import { rgba } from "polished";
+import NextLink from "next/link";
+import Flag from "react-country-flag";
 
 import useIntersection from "hooks/use-intersection";
 import { useChannel, Channel, EChannelGroupBy } from "hooks/use-channel";
-import Image from "components/image";
-import Country from "components/country";
+import colors from "themes/default/colors";
+
+import ChannelLogo from "./logo";
 
 type ChannelGroupItem = {
   items: Channel[];
@@ -13,38 +17,91 @@ type ChannelGroupItem = {
 const ChannelGroupItem: FC<ChannelGroupItem> = ({ items }) => {
   const { ref, isRender } = useIntersection();
   const { groupBy } = useChannel();
-  const imagePlaceholder = require("../../../public/channel.png?url");
+
   return (
-    <div className="grid grid-cols-5 gap-x-5 gap-y-5" ref={ref}>
+    <SimpleGrid ref={ref} columns={5} columnGap="5" rowGap="5">
+      {!isRender &&
+        items.map((_, index) => <Box minH="5px" key={`item-${index}`} />)}
       {isRender &&
-        items.map((item, index) => (
-          <div className="relative group" key={`slider-${index}`}>
-            <Image
-              src={item.logo || imagePlaceholder}
-              placeholderSrc={imagePlaceholder}
-              className="w-full h-auto min-h-full max-h-32"
-              alt=""
+        items.map(({ logo, name, link, group, flag, code, country }, index) => (
+          <Box
+            key={`item-${index}`}
+            role="group"
+            position="relative"
+            userSelect="none"
+          >
+            <ChannelLogo src={logo} alt={name} />
+            <Box
+              w="full"
+              h="full"
+              top="0"
+              left="0"
+              zIndex="10"
+              position="absolute"
+              transition="opacity"
+              pointerEvents="none"
+              bgColor={rgba(colors.mirage["500"], 0.8)}
+              _groupHover={{ bgColor: rgba(colors.mirage["500"], 0.55) }}
             />
-            <div className="absolute top-0 left-0 w-full h-full bg-mirage-500 bg-opacity-75 group-hover:bg-opacity-100 group-hover:bg-mirage-400 transition-opacity z-10" />
-            <div className="absolute bottom-0 left-0 w-full h-full flex items-center justify-center z-10">
-              <Link href={`/watch/${item.link}`} passHref>
-                <a className="text-gray-400 group-hover:text-white text-xl text-center flex flex-col items-center">
-                  <span className="w-2/3 block font-bold whitespace-no-wrap leading-tight mb-2">
-                    {item.name}
-                  </span>
-                  <span className="block text-sm">
-                    {groupBy === EChannelGroupBy.Category ? (
-                      <Country code={item.country} />
+            <Flex
+              w="full"
+              h="full"
+              top="0"
+              left="0"
+              zIndex="11"
+              position="absolute"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <NextLink href={`/watch/${link}`} passHref>
+                <Link
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
+                  w="full"
+                  fontSize="xl"
+                  textAlign="center"
+                  color="gray.400"
+                  _hover={{ textDecor: "none" }}
+                  _focus={{ outline: "none" }}
+                  _groupHover={{ color: "white" }}
+                >
+                  <Box
+                    as="strong"
+                    w="66%"
+                    mb="2"
+                    lineHeight="shorter"
+                    _groupHover={{ textDecor: "underline" }}
+                  >
+                    {name}
+                  </Box>
+                  <Box as="span" fontSize="sm">
+                    {groupBy === EChannelGroupBy.Country ? (
+                      group
                     ) : (
-                      item.group
+                      <Box as="span" display="inline-flex" lineHeight="none">
+                        {flag && (
+                          <Icon
+                            svg
+                            as={Flag}
+                            countryCode={code}
+                            title={country}
+                            mr="2"
+                          />
+                        )}
+                        <Text as="span" isTruncated>
+                          {country}
+                        </Text>
+                      </Box>
                     )}
-                  </span>
-                </a>
-              </Link>
-            </div>
-          </div>
+                  </Box>
+                </Link>
+              </NextLink>
+            </Flex>
+          </Box>
         ))}
-    </div>
+    </SimpleGrid>
   );
 };
 

@@ -4,7 +4,7 @@ import HLS from "hls.js";
 
 const useVideoPlayerHook = () => {
   const hlsRef = useRef<HLS>();
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement & { align: any }>();
   const [isPlayerReady, setPlayerReadyStatus] = useState<boolean>(false);
   const [isVideoReady, setVideoReadyStatus] = useState<boolean>(false);
   const [isRequestReload, setReloadStatus] = useState<boolean>(false);
@@ -28,18 +28,19 @@ const useVideoPlayerHook = () => {
   // }, [isVideoReady]);
 
   const attachVideo = useCallback(() => {
-    hlsRef.current = new HLS({
+    const hls = new HLS({
       capLevelToPlayerSize: true,
     });
-    hlsRef.current.attachMedia(videoRef.current);
-    hlsRef.current.on(HLS.Events.MEDIA_ATTACHED, (_, data) => {
+    hls.attachMedia(videoRef.current);
+    hls.on(HLS.Events.MEDIA_ATTACHED, (_, data) => {
       setPlayerReadyStatus(true);
     });
-    hlsRef.current.on(HLS.Events.ERROR, (_, { type, details, fatal }) => {
+    hls.on(HLS.Events.ERROR, (_, { type, details, fatal }) => {
       if (fatal) {
         setReloadStatus(true);
       }
     });
+    hlsRef.current = hls;
   }, []);
 
   const reattachVideo = useCallback(() => {

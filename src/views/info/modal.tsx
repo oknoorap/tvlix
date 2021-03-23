@@ -1,13 +1,26 @@
 import { FC } from "react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  Flex,
+  Box,
+  Icon,
+  Text,
+  Link,
+  Heading,
+} from "@chakra-ui/react";
 import Logo from "assets/svg/logo.svg?sprite";
 import { BiCoffeeTogo as CoffeeIcon } from "react-icons/bi";
 import { FaEthereum as EthereumIcon } from "react-icons/fa";
 
 type InfoModalProps = {
+  isOpen: boolean;
   onClose?: () => void;
 };
 
-const InfoModal: FC<InfoModalProps> = ({ onClose = () => {} }) => {
+const InfoModal: FC<InfoModalProps> = ({ isOpen, onClose = () => {} }) => {
   const credits = [
     {
       name: "HLS.js",
@@ -37,64 +50,112 @@ const InfoModal: FC<InfoModalProps> = ({ onClose = () => {} }) => {
   ];
 
   return (
-    <div
-      className="absolute top-0 left-0 w-screen h-screen z-30 bg-black bg-opacity-75 flex items-center justify-center"
-      onClick={onClose}
-    >
-      <div className="relative bg-white w-1/3 p-6 z-40 rounded-lg text-gray-500">
-        <div className="flex flex-col items-center justify-center mb-6">
-          <Logo className="w-48 h-auto mb-1" />
-          <span className="text-sm">Online TV Streaming Watching Party</span>
-        </div>
-        <p className="text-sm mb-4">
-          TVLiX is an open source project made by{" "}
-          <a
-            href="https://twitter.com/oknoorap"
-            target="_blank"
-            rel="noopener"
-            className="font-semibold text-blue-400"
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent bgColor="white">
+        <ModalBody>
+          <Box
+            py="4"
+            position="relative"
+            zIndex="40"
+            rounded="lg"
+            color="gray.500"
           >
-            @oknoorap
-          </a>
-          . If you were entertained by this website, plase submit feedback or
-          request a feature via{" "}
-          <a
-            href="https://github.com/oknoorap/tvlix"
-            target="_blank"
-            rel="noopener"
-            className="underline hover:no-underline"
-          >
-            Github
-          </a>
-          .
-        </p>
-        <p className="flex items-center text-sm mb-1">
-          Buy me a <CoffeeIcon className="fill-current w-4 h-4 text-red-800" />{" "}
-          coffee via ETH:
-        </p>
-        <p className="select-all bg-gray-100 text-red-700 py-1 px-2 flex items-center mb-6">
-          <EthereumIcon className="inline fill-current text-purple-700 mr-1" />{" "}
-          0xab1c4e446900ad20bf5fae1be67f87d54dacd2f0
-        </p>
-        <h3 className="text-lg font-bold underline mb-2">Thanks to</h3>
-        <div className="py-2 px-4 bg-gray-100 h-48 overflow-auto">
-          {credits.map(({ name, link, description }, index) => (
-            <div className="mb-4 last:mb-0" key={`credit-${index}`}>
-              <div className="font-bold">{name}</div>
-              <div className="text-sm text-gray-500">{description}</div>
-              <a
-                href={link}
+            <Flex
+              flexDir="column"
+              alignItems="center"
+              justifyContent="center"
+              mb="6"
+            >
+              <Icon as={Logo} w="48" h="auto" mb="1" />
+              <Box as="span" fontSize="sm">
+                Online TV Streaming Watching Party
+              </Box>
+            </Flex>
+            <Text fontSize="sm" mb="4">
+              TVLiX is Open Source project created by{" "}
+              <Link
+                isExternal
+                href="https://twitter.com/oknoorap"
                 rel="noopener"
-                target="_blank"
-                className="text-red-700 underline"
+                fontWeight="semibold"
+                color="blue.400"
               >
-                {link}
-              </a>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+                @oknoorap
+              </Link>
+              . Please submit feedback to{" "}
+              <Link
+                isExternal
+                href="https://github.com/oknoorap/tvlix"
+                textDecor="underline"
+                rel="noopener"
+                _hover={{ textDecor: "none" }}
+              >
+                Github
+              </Link>
+              .
+            </Text>
+            <Text display="flex" alignItems="center" fontSize="sm" mb="1">
+              Buy me a{" "}
+              <Icon
+                as={CoffeeIcon}
+                fill="current"
+                w="4"
+                h="4"
+                color="red.800"
+              />{" "}
+              coffee via ETH:
+            </Text>
+            <Text
+              display="flex"
+              alignItems="center"
+              userSelect="all"
+              bg="gray.100"
+              color="red.700"
+              py="1"
+              mb="6"
+            >
+              <Icon
+                as={EthereumIcon}
+                display="inline"
+                fill="current"
+                color="purple.700"
+                mr="1"
+              />{" "}
+              0xab1c4e446900ad20bf5fae1be67f87d54dacd2f0
+            </Text>
+            <Heading
+              as="h3"
+              fontSize="lg"
+              fontWeight="bold"
+              textDecor="underline"
+              mb="2"
+            >
+              Thanks to
+            </Heading>
+            <Box py="2" px="4" bgColor="gray.100" h="48" overflow="auto">
+              {credits.map(({ name, link, description }, index) => (
+                <Box _notLast={{ mb: 4 }} key={`credit-${index}`}>
+                  <Box fontWeight="bold">{name}</Box>
+                  <Box fontSize="sm" color="gray.500">
+                    {description}
+                  </Box>
+                  <Link
+                    isExternal
+                    href={link}
+                    rel="noopener"
+                    color="red.700"
+                    textDecor="underline"
+                  >
+                    {link}
+                  </Link>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 };
 

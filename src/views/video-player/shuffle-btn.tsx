@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Box, Button, Icon } from "@chakra-ui/react";
 import { GiDiceSixFacesFive as DiceIcon } from "react-icons/gi";
 
 import { useVideoPlayer } from "hooks/use-video-player";
@@ -14,13 +15,28 @@ const VideoPlayerShuffleButton: FC<VideoPlayerShuffleButtonProps> = ({
 
   return (
     isPlaying && (
-      <button
+      <Button
         onClick={onClick}
-        className="flex items-center rounded-full bg-black bg-opacity-75 py-2 px-6 text-xl opacity-50 hover:opacity-100 active:outline-none uppercase invisible group-hover:visible select-none"
+        display="flex"
+        alignItems="center"
+        rounded="full"
+        textTransform="uppercase"
+        visibility="hidden"
+        userSelect="none"
+        bg="black"
+        py="2"
+        px="6"
+        fontSize="xl"
+        opacity=".5"
+        _hover={{ opacity: "1" }}
+        _active={{ outline: "none" }}
+        _groupHover={{ visibility: "visible" }}
       >
-        <DiceIcon className="fill-current w-6 h-6 mr-2" />
-        <span className="font-bold">Shuffle</span>
-      </button>
+        <Icon as={DiceIcon} fill="current" w="6" h="6" mr="2" />
+        <Box as="span" fontWeight="bold">
+          Shuffle
+        </Box>
+      </Button>
     )
   );
 };
