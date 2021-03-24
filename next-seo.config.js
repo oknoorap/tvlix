@@ -1,4 +1,4 @@
-const defaultSEOConfig = {
+module.exports = {
   title: "Online TV Streaming Watching Party",
   titleTemplate: "%s | TVlix",
   description: "Chat and Watch Live TV Online Streaming with Others",
@@ -9,5 +9,3 @@ const defaultSEOConfig = {
     site_name: "TVlix",
   },
 };
-
-export default defaultSEOConfig;
