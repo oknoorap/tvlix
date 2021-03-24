@@ -69,7 +69,7 @@ const InfoModal: FC<InfoModalProps> = ({ isOpen, onClose = () => {} }) => {
             >
               <Icon as={Logo} w="48" h="auto" mb="1" />
               <Box as="span" fontSize="sm">
-                Online TV Streaming Watching Party
+                Online TV Streaming Watch Party
               </Box>
             </Flex>
             <Text fontSize="sm" mb="4">

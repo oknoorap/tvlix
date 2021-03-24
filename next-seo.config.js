@@ -1,5 +1,5 @@
 module.exports = {
-  title: "Online TV Streaming Watching Party",
+  title: "Online TV Streaming Watch Party",
   titleTemplate: "%s | TVlix",
   description: "Chat and Watch Live TV Online Streaming with Others",
   openGraph: {
