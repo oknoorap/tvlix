@@ -10,7 +10,7 @@ const App = ({ Component, pageProps }) => {
     <ChakraProvider theme={defaultTheme}>
       <DefaultSeo {...SEO} />
       <LogoJsonLd
-        logo={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/logo.jpg`}
+        logo={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/images/logo.png`}
         url={process.env.NEXT_PUBLIC_WEBSITE_URL}
       />
       <Head>
