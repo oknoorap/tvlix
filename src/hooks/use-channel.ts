@@ -63,7 +63,7 @@ export const parseM3U = (string: string) => {
 };
 
 export const fetchChannels = async () => {
-  const url = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/channels.m3u`;
+  const url = `${process.env.NEXT_PUBLIC_WEBSITE_URL}assets/media/channels.m3u`;
   try {
     const response = await fetch(url);
     return parseM3U(await response.text());
