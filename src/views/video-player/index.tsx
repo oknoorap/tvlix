@@ -22,14 +22,9 @@ const ChatProvider = dynamic(
 );
 
 const CinemaViewer: FC = ({ children }) => {
-  const {
-    videoRef,
-    loadVideo,
-    isRequestReload,
-    reattachVideo,
-  } = useVideoPlayer();
+  const { loadVideo, isRequestReload, reattachVideo } = useVideoPlayer();
   const { currentChannel, randomizeChannel } = useChannel();
-  const [playRoll] = useSound("/dice-roll.mp3");
+  const [playRoll] = useSound("/assets/media/dice-roll.mp3");
 
   // Randomize channel
   const shuffleChannel = useCallback(() => {
