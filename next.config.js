@@ -2,6 +2,7 @@ const withPlugins = require("next-compose-plugins");
 const withOptimizedImages = require("next-optimized-images");
 const withOffline = require("next-offline");
 
+const isDev = process.env.NODE_ENV === "development";
 const nextConfig = {
   webpack: (config, options) => {
     config.module.rules.push({
@@ -14,6 +15,9 @@ const nextConfig = {
       ],
     });
     return config;
+  },
+  workboxOpts: {
+    generateInDevMode: !isDev,
   },
 };
 
