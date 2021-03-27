@@ -7,7 +7,7 @@
 <h1 align="center">TVlix - Online TV Streaming Watch Party</h1>
 
 <p align="center">
-  <a aria-label="Ribhararnus Pracutian" href="https://tvlix.online">
+  <a aria-label="Ribhararnus Pracutian" href="https://github.com/oknoorap">
     <img src="https://img.shields.io/badge/Ribhararnus%20Pracutian-000000.svg?style=for-the-badge&labelColor=000">
   </a>
   <a aria-label="License" href="https://github.com/oknoorap/tvlix/blob/master/LICENSE">
