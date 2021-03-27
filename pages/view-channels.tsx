@@ -1,6 +1,6 @@
 import { NextSeo } from "next-seo";
 
-import Navbar from "layouts/navbar";
+import Layout from "layouts/default";
 import { ChannelProvider } from "hooks/use-channel";
 import ChannelExplorer from "views/channel-explorer";
 import ChannelExplorerNavbar from "views/channel-explorer/navbar";
@@ -15,10 +15,10 @@ const ViewChannelPage = () => {
       />
       <ChannelProvider>
         <ChannelExplorer>
-          <Navbar>
+          <Layout>
             <ChannelExplorerNavbar />
             <Info />
-          </Navbar>
+          </Layout>
         </ChannelExplorer>
       </ChannelProvider>
     </>

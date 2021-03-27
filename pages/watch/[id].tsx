@@ -8,7 +8,7 @@ import { parseM3U } from "hooks/use-channel";
 import VideoPlayer from "views/video-player";
 import VideoTitle from "views/video-player/title";
 import Info from "views/info";
-import Navbar from "layouts/navbar";
+import Layout from "layouts/default";
 
 const ChannelPage = ({ channel }) => {
   return (
@@ -17,10 +17,10 @@ const ChannelPage = ({ channel }) => {
       <ChannelProvider initialState={channel}>
         <VideoPlayerProvider>
           <VideoPlayer>
-            <Navbar variant="ghost">
+            <Layout variant="ghost">
               <VideoTitle />
               <Info />
-            </Navbar>
+            </Layout>
           </VideoPlayer>
         </VideoPlayerProvider>
       </ChannelProvider>
@@ -31,7 +31,8 @@ const ChannelPage = ({ channel }) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   const playlist = await import("../../public/assets/media/channels.m3u");
   const channels = parseM3U(playlist.default);
-  const paths = channels.map((item) => ({
+  // const paths = channels.map((item) => ({
+  const paths = channels.slice(0, 3).map((item) => ({
     params: { id: item.link },
   }));
   return {
@@ -43,7 +44,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const playlist = await import("../../public/assets/media/channels.m3u");
   const channels = parseM3U(playlist.default);
-  const channel = channels.find((item) => item.link === context.params.id);
+  // const channel = channels.find((item) => item.link === context.params.id);
+  const channel = channels
+    .slice(0, 3)
+    .find((item) => item.link === context.params.id);
   const props = {
     channel,
   };
