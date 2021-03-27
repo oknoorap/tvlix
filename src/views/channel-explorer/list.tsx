@@ -21,19 +21,29 @@ const ChannelGroupList = () => {
       <Box p="4" mt="20">
         {searchQuery.length > 0 && (
           <Heading as="h2" fontSize="lg" color="gray.400" mb="4">
-            {isSearching ? (
-              `Searching "${searchQuery}" ...`
-            ) : (
-              <>
-                <Box as="span" mr="1">
-                  Found {searchResult.length}
-                </Box>
-                <Box as="strong" textDecor="underline" mr="1" color="white">
-                  {searchQuery}
-                </Box>
-                <Box as="span">channel(s)</Box>
-              </>
-            )}
+            {isSearching && `Searching "${searchQuery}" ...`}
+            {!isSearching &&
+              (searchResult.length > 0 ? (
+                <>
+                  <Box as="span" mr="1">
+                    Found {searchResult.length}
+                  </Box>
+                  <Box as="strong" textDecor="underline" mr="1" color="white">
+                    {searchQuery}
+                  </Box>
+                  <Box as="span">channel(s)</Box>
+                </>
+              ) : (
+                <>
+                  <Box as="span" mr="1">
+                    Sorry, no results containing
+                  </Box>
+                  <Box as="strong" textDecor="underline" mr="1" color="white">
+                    {searchQuery}
+                  </Box>
+                  <Box as="span">were found.</Box>
+                </>
+              ))}
           </Heading>
         )}
 
