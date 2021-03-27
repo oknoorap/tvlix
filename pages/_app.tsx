@@ -16,7 +16,7 @@ const App = ({ Component, pageProps }) => {
     const w = window as DataLayer;
     w.dataLayer = w.dataLayer || [];
     w.dataLayer.push(["js", new Date()]);
-    w.dataLayer.push("config", "G-264RTGCSS5");
+    w.dataLayer.push(["config", "G-264RTGCSS5"]);
   }, []);
 
   return (
