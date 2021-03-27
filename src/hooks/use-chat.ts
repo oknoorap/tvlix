@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { createContainer } from "unstated-next";
 import IPFS from "ipfs";
-import OrbitDB from "orbit-db";
-import faker from "faker";
-import slugify from "slugify";
+import OrbitDB from "orbit-db/dist/es5/OrbitDB";
 import $randomColor from "randomcolor";
 import shuffle from "lodash/shuffle";
 
@@ -183,8 +181,20 @@ export const Character = {
   [ECharacter.Sun]: "🌞",
 };
 
-const $randomUsername = () =>
-  slugify(faker.internet.userName(), { lower: true }).replace(/\./g, "-");
+const v = "aiueo".split("");
+const k = Array.from({ length: 26 }, (_, index) => 97 + index)
+  .map((item) => String.fromCharCode(item))
+  .filter((item) => !v.includes(item));
+
+const $randomUsername = () => {
+  const [n1] = shuffle(v),
+    [n2] = shuffle(k),
+    [n3] = shuffle(v),
+    [n4] = shuffle(k),
+    [n5] = shuffle(v),
+    [n6] = shuffle(k);
+  return `${n1}${n2}${n3}${n4}${n5}${n6}`;
+};
 
 const $randomChar = () => shuffle(Object.keys(Character))?.[0];
 
