@@ -54,13 +54,7 @@ const InfoModal: FC<InfoModalProps> = ({ isOpen, onClose = () => {} }) => {
       <ModalOverlay />
       <ModalContent bgColor="white">
         <ModalBody>
-          <Box
-            py="4"
-            position="relative"
-            zIndex="40"
-            rounded="lg"
-            color="mirage.500"
-          >
+          <Box py="4" zIndex="40" rounded="lg" color="mirage.500">
             <Flex
               flexDir="column"
               alignItems="center"
