@@ -1,10 +1,12 @@
 const withPlugins = require("next-compose-plugins");
-const optimizedImages = require("next-optimized-images");
+const withOptimizedImages = require("next-optimized-images");
+const withOffline = require("next-offline");
 
+const isDev = process.env.NODE_ENV === "development";
 const nextConfig = {
   webpack: (config, options) => {
     config.module.rules.push({
-      test: /\.m3u/,
+      test: /\.m3u$/,
       use: [
         options.defaultLoaders.babel,
         {
@@ -12,11 +14,13 @@ const nextConfig = {
         },
       ],
     });
-
     return config;
+  },
+  workboxOpts: {
+    generateInDevMode: !isDev,
   },
 };
 
-const nextPlugins = [optimizedImages];
+const nextPlugins = [withOptimizedImages, withOffline];
 
-module.exports = withPlugins([nextPlugins], nextConfig);
+module.exports = withPlugins(nextPlugins, nextConfig);

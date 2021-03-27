@@ -1,30 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+  <a href="https://nextjs.org">
+    <img src="public/assets/images/logo.png" height="64">
+  </a>
+</p>
 
-## Getting Started
+<h1 align="center">TVlix - Online TV Streaming Watch Party</h1>
 
-First, run the development server:
+<p align="center">
+  <a aria-label="Ribhararnus Pracutian" href="https://github.com/oknoorap">
+    <img src="https://img.shields.io/badge/Ribhararnus%20Pracutian-000000.svg?style=for-the-badge&labelColor=000">
+  </a>
+  <a aria-label="License" href="https://github.com/oknoorap/tvlix/blob/master/LICENSE">
+    <img alt="" src="https://img.shields.io/npm/l/next.svg?style=for-the-badge&labelColor=000000">
+  </a>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+<h2 align="center"><a href="https://tvlix.online">https://tvlix.online</a></h2>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗒 About TVlix
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+TVlix is a fun side-project made by [Ribhararnus Pracutian](https://github.com/oknoorap) portfolio. Inspired by Netflix and Social Media Live Streams which using chat to interacts with live streamers.
 
-## Learn More
+All MVP features maybe not completed yet. If you want to send feedbacks or complain about anything, please open issue.
 
-To learn more about Next.js, take a look at the following resources:
+## ✨ Credits
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Thanks to these amazing open source projects:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<details><summary>HLS.js</summary>
+JavaScript HLS client using Media Source Extension.<br />
+<a href="https://github.com/video-dev/hls.js/" rel="noopener">https://github.com/video-dev/hls.js/</a>
+</details>
 
-## Deploy on Vercel
+<details><summary>iptv</summary>
+Collection of 5000+ publicly available IPTV channels from all over the world.<br />
+<a href="https://github.com/iptv-org/iptv" rel="noopener">https://github.com/iptv-org/iptv</a>
+</details>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<details><summary>orbit-db</summary>
+Peer-to-Peer Databases for the Decentralized Web.<br />
+<a href="https://github.com/orbitdb/orbit-db" rel="noopener">https://github.com/orbitdb/orbit-db</a>
+</details>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<details><summary>js-sha256</summary>
+A simple SHA-256 / SHA-224 hash function for JavaScript supports UTF-8 encoding.<br />
+<a href="https://github.com/emn178/js-sha256" rel="noopener">https://github.com/emn178/js-sha256</a>
+</details>
+
+## License
+
+2021 (c) MIT License. Ribhararnus Pracutian

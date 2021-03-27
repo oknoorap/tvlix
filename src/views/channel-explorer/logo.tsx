@@ -16,7 +16,7 @@ const ChannelExplorerLogo: FC<ChannelLogoProps> = ({
 }) => {
   const imgRef = useRef<HTMLImageElement>();
   const [isLoaded, setLoadStatus] = useState(false);
-  const imgPlaceholder = require("../../../public/channel.png?url");
+  const imgPlaceholder = require("../../../public/assets/images/channel.png?url");
 
   useEffect(() => {
     if (!process.browser || isLoaded) return;

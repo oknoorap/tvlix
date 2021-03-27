@@ -1,6 +1,6 @@
 root = true
 
-[*.{json,js,jsx,ts,tsx,babelrc,gitignore}]
+[*.{json,js,jsx,ts,tsx,babelrc,gitignore,md}]
 indent_size = 2
 indent_style = space
 

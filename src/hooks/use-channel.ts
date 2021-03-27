@@ -1,10 +1,12 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { createContainer } from "unstated-next";
 import playlistParser from "iptv-playlist-parser";
 import slugify from "slugify";
 import shuffle from "lodash.shuffle";
 import flatten from "lodash.flatten";
+import uniqBy from "lodash.uniqby";
 import CountryISO from "i18n-iso-countries";
+import Fuse from "fuse.js";
 
 import { hash } from "utils/helpers";
 
@@ -25,9 +27,10 @@ export type Channel = {
   code?: string;
   url: string;
   group: string;
-  slug?: string;
   link?: string;
   hash?: string;
+  ref: string;
+  rec?: string;
 };
 
 type Filter = string[];
@@ -37,36 +40,40 @@ export const Uncategorized = "Uncategorized";
 export const UncategorizedCode = "UC";
 
 export const parseM3U = (string: string) => {
-  const { items } = playlistParser.parse(string);
   const slugOpts = {
     lower: true,
     remove: /[\(\)\/\.]/g,
-    replacement: "-",
+    replacement: " ",
   };
-  return items
-    .map((item) => ({
-      ...item.tvg,
-      name: item.name,
-      group: item.group.title || Uncategorized,
-      url: item.url,
-    }))
-    .map((item) => {
-      const hashes = hash(JSON.stringify(item));
-      const start = hashes.slice(0, 5);
-      const end = hashes.slice(-5);
-      const slug = slugify(item.name, slugOpts);
-      const link = `channel-${slug}-${start + end}`;
-      return {
-        ...item,
-        slug,
-        link,
-        hash: hashes,
-      };
-    });
+  const { items } = playlistParser.parse(string);
+  const playlist: Channel[] = uniqBy(
+    items
+      .map((item) => ({
+        ...item.tvg,
+        name: item.name,
+        group: item.group.title || Uncategorized,
+        url: item.url,
+      }))
+      .map((item) => {
+        const hashes = hash(JSON.stringify(item));
+        const start = hashes.slice(0, 5);
+        const end = hashes.slice(-5);
+        const ref = slugify(item.name, slugOpts);
+        const link = `channel-${start + end}`;
+        return {
+          ...item,
+          link,
+          ref,
+          hash: hashes,
+        };
+      }),
+    "ref"
+  );
+  return playlist;
 };
 
 export const fetchChannels = async () => {
-  const url = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/channels.m3u`;
+  const url = `${process.env.NEXT_PUBLIC_WEBSITE_URL}assets/media/channels.m3u`;
   try {
     const response = await fetch(url);
     return parseM3U(await response.text());
@@ -77,6 +84,7 @@ export const fetchChannels = async () => {
 };
 
 const useChannelHook = (initialChannel: Channel) => {
+  const fuse = useRef<Fuse<Channel>>();
   const [isChannelLoaded, setChannelLoadStatus] = useState<boolean>();
   const [currentChannel, setCurrentChannel] = useState<Channel>(initialChannel);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -136,6 +144,10 @@ const useChannelHook = (initialChannel: Channel) => {
           });
         }
       });
+    });
+
+    Object.keys(items).forEach((key) => {
+      items[key] = uniqBy(items[key], "ref");
     });
 
     return items;
@@ -233,13 +245,46 @@ const useChannelHook = (initialChannel: Channel) => {
     });
   }, [groupBy, channelGroupBy, filters, selectedCountry]);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setSearchStatus] = useState(false);
+  const [searchResult, setSearchResult] = useState<Fuse.FuseResult<Channel>[]>(
+    []
+  );
+  const search = useCallback((query: string = "") => {
+    const timeout = setTimeout(() => {
+      setSearchStatus(false);
+    }, 500);
+
+    if (!query) {
+      setSearchStatus(false);
+      setSearchResult([]);
+    }
+
+    setSearchStatus(true);
+    setSearchQuery(query);
+    if (query.length && fuse.current) {
+      const searchResult = fuse.current.search(query.toLowerCase());
+      setSearchResult(searchResult);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
+
   useEffect(() => {
     if (!process.browser) return;
     let subscribed = true;
 
     const getChannels = async () => {
       const channels = await fetchChannels();
-
+      const options = {
+        keys: ["ref", "name"],
+        threshold: 0.3,
+        distance: 0,
+      };
+      const channelIndex = Fuse.createIndex(options.keys, channels);
+      fuse.current = new Fuse(channels, options, channelIndex);
       setChannels(channels);
       setChannelLoadStatus(true);
 
@@ -265,6 +310,10 @@ const useChannelHook = (initialChannel: Channel) => {
     countryMenus,
     selectedCategory,
     selectedCountry,
+    isSearching,
+    searchResult,
+    searchQuery,
+    search,
   };
 };
 

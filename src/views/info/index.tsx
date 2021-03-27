@@ -1,12 +1,33 @@
-import { Box, Icon, useDisclosure } from "@chakra-ui/react";
+import { Box, Icon, Link, useDisclosure } from "@chakra-ui/react";
 import { AiOutlineInfoCircle as InfoIcon } from "react-icons/ai";
 
-import InfoModal from "./modal";
+import DMCAModal from "./dmca-modal";
+import InfoModal from "./info-modal";
 
 const InfoView = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isInfoOpen,
+    onOpen: onInfoOpen,
+    onClose: onInfoClose,
+  } = useDisclosure();
+  const {
+    isOpen: isDMCAOpen,
+    onOpen: onDMCAOpen,
+    onClose: onDMCAClose,
+  } = useDisclosure();
   return (
-    <Box>
+    <Box role="group">
+      <Link
+        mr="2"
+        fontSize="sm"
+        fontWeight="bold"
+        visibility="hidden"
+        textDecor="underline"
+        _groupHover={{ visibility: "visible" }}
+        onClick={onDMCAOpen}
+      >
+        DMCA
+      </Link>
       <Icon
         as={InfoIcon}
         w="6"
@@ -16,9 +37,10 @@ const InfoView = () => {
         alignSelf="flex-start"
         cursor="pointer"
         color="white"
-        onClick={onOpen}
+        onClick={onInfoOpen}
       />
-      <InfoModal isOpen={isOpen} onClose={onClose} />
+      <DMCAModal isOpen={isDMCAOpen} onClose={onDMCAClose} />
+      <InfoModal isOpen={isInfoOpen} onClose={onInfoClose} />
     </Box>
   );
 };

@@ -54,13 +54,7 @@ const InfoModal: FC<InfoModalProps> = ({ isOpen, onClose = () => {} }) => {
       <ModalOverlay />
       <ModalContent bgColor="white">
         <ModalBody>
-          <Box
-            py="4"
-            position="relative"
-            zIndex="40"
-            rounded="lg"
-            color="gray.500"
-          >
+          <Box py="4" zIndex="40" rounded="lg" color="mirage.500">
             <Flex
               flexDir="column"
               alignItems="center"
@@ -69,7 +63,7 @@ const InfoModal: FC<InfoModalProps> = ({ isOpen, onClose = () => {} }) => {
             >
               <Icon as={Logo} w="48" h="auto" mb="1" />
               <Box as="span" fontSize="sm">
-                Online TV Streaming Watching Party
+                Online TV Streaming Watch Party
               </Box>
             </Flex>
             <Text fontSize="sm" mb="4">
