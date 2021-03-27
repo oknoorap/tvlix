@@ -35,6 +35,10 @@ class MyDocument extends Document {
             content="/favicons/browserconfig.xml"
           />
           <meta name="theme-color" content="#ffffff" />
+          <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-264RTGCSS5"
+          ></script>
         </Head>
         <body>
           <Main />

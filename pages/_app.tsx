@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
 import { DefaultSeo, LogoJsonLd } from "next-seo";
@@ -5,7 +6,19 @@ import { DefaultSeo, LogoJsonLd } from "next-seo";
 import defaultTheme from "themes/default";
 import SEO from "../next-seo.config";
 
+type DataLayer = Window &
+  typeof globalThis & {
+    dataLayer: any;
+  };
+
 const App = ({ Component, pageProps }) => {
+  useEffect(() => {
+    const w = window as DataLayer;
+    w.dataLayer = w.dataLayer || [];
+    w.dataLayer.push(["js", new Date()]);
+    w.dataLayer.push("config", "G-264RTGCSS5");
+  }, []);
+
   return (
     <ChakraProvider theme={defaultTheme}>
       <DefaultSeo {...SEO} />
