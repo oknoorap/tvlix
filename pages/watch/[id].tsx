@@ -31,8 +31,7 @@ const ChannelPage = ({ channel }) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   const playlist = await import("../../public/assets/media/channels.m3u");
   const channels = parseM3U(playlist.default);
-  // const paths = channels.map((item) => ({
-  const paths = channels.slice(0, 3).map((item) => ({
+  const paths = channels.map((item) => ({
     params: { id: item.link },
   }));
   return {
@@ -44,10 +43,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const playlist = await import("../../public/assets/media/channels.m3u");
   const channels = parseM3U(playlist.default);
-  // const channel = channels.find((item) => item.link === context.params.id);
-  const channel = channels
-    .slice(0, 3)
-    .find((item) => item.link === context.params.id);
+  const channel = channels.find((item) => item.link === context.params.id);
   const props = {
     channel,
   };
