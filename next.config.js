@@ -16,11 +16,20 @@ const nextConfig = {
     });
     return config;
   },
-  workboxOpts: {
-    generateInDevMode: !isDev,
-  },
 };
 
-const nextPlugins = [withOptimizedImages, withOffline];
+const nextPlugins = [
+  withOptimizedImages,
+  [
+    withOffline,
+    {
+      workboxOpts: isDev
+        ? {
+            generateInDevMode: false,
+          }
+        : {},
+    },
+  ],
+];
 
 module.exports = withPlugins(nextPlugins, nextConfig);
