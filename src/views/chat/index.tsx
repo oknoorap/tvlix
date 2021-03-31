@@ -15,8 +15,8 @@ const ChatView = () => {
   const { setChannelId } = useChat();
 
   useEffect(() => {
-    if (currentChannel?.hash) {
-      setChannelId(currentChannel?.hash);
+    if (currentChannel?.link) {
+      setChannelId(currentChannel?.link);
     }
   }, [currentChannel]);
 
