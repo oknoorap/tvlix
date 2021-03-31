@@ -86,7 +86,7 @@ export const fetchChannels = async () => {
 const useChannelHook = (initialChannel: Channel) => {
   const fuse = useRef<Fuse<Channel>>();
   const [isChannelLoaded, setChannelLoadStatus] = useState<boolean>();
-  const [currentChannel, setCurrentChannel] = useState<Channel>(initialChannel);
+  const [currentChannel, setCurrentChannel] = useState<Channel>();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [groupBy, setGroupBy] = useState<EChannelGroupBy>(
     EChannelGroupBy.Category
@@ -290,6 +290,8 @@ const useChannelHook = (initialChannel: Channel) => {
 
       if (!initialChannel) {
         randomizeChannel(channels);
+      } else {
+        setCurrentChannel(initialChannel);
       }
     };
 
