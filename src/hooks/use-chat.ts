@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { createContainer } from "unstated-next";
-import IPFS from "ipfs";
-import OrbitDB from "orbit-db/dist/es5/OrbitDB";
 import $randomColor from "randomcolor";
 import shuffle from "lodash/shuffle";
 
@@ -18,7 +16,7 @@ type Chat = {
 
 type IPFSInstance = Window &
   typeof globalThis & {
-    ipfs: IPFS.IPFS;
+    ipfs: any;
   };
 
 enum ECharacter {
@@ -199,7 +197,7 @@ const $randomUsername = () => {
 const $randomChar = () => shuffle(Object.keys(Character))?.[0];
 
 const useChatHook = () => {
-  const dbRef = useRef<OrbitDB>();
+  const dbRef = useRef<any>();
   const [username, setUsername] = useLocalStorage<string>(
     "tvlix-username",
     $randomUsername()
@@ -229,18 +227,17 @@ const useChatHook = () => {
   }, []);
 
   const initIPFS = async () => {
-    return await IPFS.create({
+    return await (window as any).Ipfs.create({
       repo:
         "/orbitdb/zdpuAuzhdHD4AJLvGpkNsytvjauy6r9YWZUgsHgQyFQ74E6M2/tvlix-db",
+      start: true,
+      preload: {
+        enabled: true,
+      },
+      EXPERIMENTAL: {
+        pubsub: true,
+      },
       config: {
-        Discovery: {
-          MDNS: {
-            Enabled: true,
-          },
-          webRTCStar: {
-            Enabled: true,
-          },
-        },
         Addresses: {
           Swarm: [
             "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
@@ -289,32 +286,35 @@ const useChatHook = () => {
           (window as IPFSInstance).ipfs = await initIPFS();
         }
 
-        const orbitdb = await OrbitDB.createInstance(
+        const orbitdb = await (window as any).OrbitDB.createInstance(
           (window as IPFSInstance).ipfs
         );
-        dbRef.current = await orbitdb.log(`channel-${channelId}`);
-        await dbRef.current.load();
+
+        const chatdb = await orbitdb.open(channelId, {
+          create: true,
+          overwrite: false,
+          localOnly: false,
+          type: "eventlog",
+          accessController: {
+            write: ["*"],
+          },
+        });
+
+        const onChatAdded = () => {
+          const chats = chatdb
+            .iterator({ limit: 10 })
+            .collect()
+            .map((e) => e?.payload?.value ?? {});
+          console.log(channelId, { chats });
+          setChats(chats);
+        };
+
+        chatdb.events.on("write", onChatAdded);
+        chatdb.events.on("ready", onChatAdded);
+        chatdb.events.on("replicated", onChatAdded);
+        await chatdb.load();
+        dbRef.current = chatdb;
         setConnectionStatus(true);
-
-        dbRef.current.events.on(
-          "write",
-          (address: string, { payload: { value: newChat } }: any) => {
-            setChats((chats) => [
-              ...chats.reverse().splice(0, 9).reverse(),
-              {
-                address,
-                ...newChat,
-              },
-            ]);
-          }
-        );
-
-        // Get latest chat message
-        const chats = dbRef.current
-          .iterator({ limit: 10 })
-          .collect()
-          .map((e) => e?.payload?.value ?? {});
-        setChats(chats);
       } catch {}
     };
     initChat();

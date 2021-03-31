@@ -31,6 +31,14 @@ const App = ({ Component, pageProps }) => {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
         />
+        <script
+          async
+          src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"
+        />
+        <script
+          async
+          src="https://cdn.jsdelivr.net/npm/orbit-db/dist/orbitdb.min.js"
+        />
       </Head>
       <Component {...pageProps} />
     </ChakraProvider>
